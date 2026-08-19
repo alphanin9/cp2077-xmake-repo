@@ -15,7 +15,7 @@ package("red-lib")
     -- RedLib pulls in <Windows.h> through the SDK and then uses std::min/std::max.
     add_defines("NOMINMAX")
 
-    on_install("windows", function (package)
+    on_install("windows|x64", function (package)
         -- Upstream's CMakeLists.txt only declares an INTERFACE target, it has no install
         -- rules at all, so the headers are copied by hand. vendor/ is a second include
         -- root: RedLib.hpp does `#include <nameof/nameof.hpp>`.
@@ -23,7 +23,7 @@ package("red-lib")
         os.cp("vendor/nameof", package:installdir("include"))
     end)
 
-    on_test("windows", function (package)
+    on_test("windows|x64", function (package)
         assert(package:check_cxxsnippets({test = [[
             void test() {
                 auto name = Red::GetTypeName<Red::CName>();

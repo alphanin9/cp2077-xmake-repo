@@ -25,7 +25,7 @@ package("sharedpunk")
         import("package.tools.xmake").install(package)
     end)
 
-    on_test("windows", function (package)
+    on_test("windows|x64", function (package)
         assert(package:check_cxxsnippets({test = [[
             void test() {
                 auto system = shared::raw::Localization::LocalizationSystem::GetInstance();

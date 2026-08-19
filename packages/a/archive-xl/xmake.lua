@@ -15,7 +15,7 @@ package("archive-xl")
 
     add_deps("red4ext-sdk")
 
-    on_install("windows", function (package)
+    on_install("windows|x64", function (package)
         -- The header as shipped is not self-contained: it starts with <libloaderapi.h> /
         -- <minwindef.h> (which need <Windows.h> first for _AMD64_, else winnt.h errors with
         -- "No Target Architecture") and then pulls <RED4ext/RTTISystem.hpp>, which on its own
@@ -31,7 +31,7 @@ package("archive-xl")
         os.cp("support/red4ext/ArchiveXL.hpp", package:installdir("include/RED4ext"))
     end)
 
-    on_test("windows", function (package)
+    on_test("windows|x64", function (package)
         assert(package:check_cxxsnippets({test = [[
             void test() {
                 ArchiveXL::RegisterArchives("archives");

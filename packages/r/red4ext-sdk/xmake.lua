@@ -37,7 +37,7 @@ package("red4ext-sdk")
         end
     end)
 
-    on_install("windows", function (package)
+    on_install("windows|x64", function (package)
         if not package:config("headeronly") then
             local configs = {"-DRED4EXT_HEADER_ONLY=OFF", "-DRED4EXT_BUILD_EXAMPLES=OFF", "-DRED4EXT_USE_PCH=OFF"}
             table.insert(configs, "-DCMAKE_BUILD_TYPE=" .. (package:is_debug() and "Debug" or "Release"))
@@ -53,7 +53,7 @@ package("red4ext-sdk")
         os.cp("vendor/D3D12MemAlloc/D3D12MemAlloc.h", package:installdir("include"))
     end)
 
-    on_test("windows", function (package)
+    on_test("windows|x64", function (package)
         assert(package:check_cxxsnippets({test = [[
             void test() {
                 RED4ext::CName name("RED4ext.SDK");
