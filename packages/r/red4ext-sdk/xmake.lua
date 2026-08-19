@@ -1,36 +1,63 @@
 package("red4ext-sdk")
-  add_deps("cmake")
+    set_homepage("https://github.com/WopsS/RED4ext.SDK")
+    set_description("A library to create mods for REDengine 4 (Cyberpunk 2077), independently of RED4ext.")
+    set_license("MIT")
 
-  set_homepage("https://github.com/wopss/RED4ext.SDK")
-  set_description("A library to create mods for REDengine 4 (Cyberpunk 2077), independently of RED4ext.")
-  set_license("MIT")
+    -- RED4ext/Scripting/Natives/Generated/** nests deep enough to blow past MAX_PATH on
+    -- checkout, which fails the clone outright on a stock Windows box.
+    set_policy("platform.longpaths", true)
 
-  -- Set this to your own repo when making some PR.
-  add_urls("https://github.com/wopss/RED4ext.SDK.git")
+    -- Set this to your own repo when making some PR.
+    add_urls("https://github.com/WopsS/RED4ext.SDK.git")
 
-  add_configs("headeronly", {description = "Header-only mode", default = false, type = "boolean"})
+    add_versions("2026.07.30", "ad7277714ad30d6885d7050c5ba24fa0102f6920")
+    add_versions("2026.07.06", "cce6e255f5e61056e634f324a3dbdfa6da523af9")
+    add_versions("2026.06.07", "109b585a956b694b859ca9e75766543be60d2051")
+    add_versions("2026.05.30", "fcda519942ef74d2191accfa752bb5c423f3e953")
+    add_versions("2026.03.09", "a4a781088a92a8efa890d94fde4efd8985d497c7")
 
-  on_load("windows", function(package)
-    -- Ensure proper value for "shared" and "kind" for header-only mode.
-    if package:config("headeronly") then
-      package:config_set("shared", false)
-      package:set("kind", "library", { headeronly = true })
+    -- Relocation-inl.hpp pops a MessageBoxW when an address lookup fails, so anything
+    -- touching RED4ext::UniversalReloc* needs User32 -- including header-only consumers,
+    -- which is most of them.
+    add_syslinks("User32")
 
-      -- TODO: This should be fixed in RED4ext.SDK CMake file! Works for other build types without this...
-      package:add("defines", "RED4EXT_HEADER_ONLY", {public = true})
-    end
-  end)
+    -- The SDK is consumed header-only by most of the CP2077 modding ecosystem
+    -- (TweakXL, ArchiveXL, Codeware, SharedPunk, ...), so that is the default here too.
+    add_configs("headeronly", {description = "Use the header-only version of the library.", default = true, type = "boolean"})
 
-  on_install("windows", function (package)
-    local configs = {}
-    table.insert(configs, "-DRED4EXT_HEADER_ONLY=" .. (package:config("headeronly") and "ON" or "OFF"))
-    table.insert(configs, "-DRED4EXT_BUILD_EXAMPLES=OFF")
-    table.insert(configs, "-DCMAKE_BUILD_TYPE=" .. (package:debug() and "Debug" or "Release"))
-    table.insert(configs, "-DBUILD_SHARED_LIBS=" .. (package:config("shared") and "ON" or "OFF"))
+    on_load(function (package)
+        if package:config("headeronly") then
+            package:set("kind", "library", {headeronly = true})
+        else
+            -- Common.hpp keys off this to switch the *-inl.hpp bodies from `inline` to
+            -- out-of-line definitions. CMake exports it as a PUBLIC define, but nothing
+            -- consumes RED4extConfig.cmake here, so it has to be re-declared.
+            package:add("defines", "RED4EXT_STATIC_LIB")
+            package:add("deps", "cmake")
+        end
+    end)
 
-    import("package.tools.cmake").install(package, configs)
-  end)
+    on_install("windows", function (package)
+        if not package:config("headeronly") then
+            local configs = {"-DRED4EXT_HEADER_ONLY=OFF", "-DRED4EXT_BUILD_EXAMPLES=OFF", "-DRED4EXT_USE_PCH=OFF"}
+            table.insert(configs, "-DCMAKE_BUILD_TYPE=" .. (package:is_debug() and "Debug" or "Release"))
+            table.insert(configs, "-DBUILD_SHARED_LIBS=OFF")
+            import("package.tools.cmake").install(package, configs)
+        else
+            -- include/RED4ext/Version.hpp is checked in, so header-only needs no configure step.
+            os.cp("include", package:installdir())
+        end
 
-  on_test("windows", function (package)
-    assert(package:has_cxxincludes("RED4ext/CName.hpp", {configs = {languages = "cxx20"}}))
-  end)
+        -- RED4ext/GpuApi/*.hpp do `#include <D3D12MemAlloc.h>`, and upstream's install
+        -- rules only cover include/ -- without this, anything reaching GpuApi fails to compile.
+        os.cp("vendor/D3D12MemAlloc/D3D12MemAlloc.h", package:installdir("include"))
+    end)
+
+    on_test("windows", function (package)
+        assert(package:check_cxxsnippets({test = [[
+            void test() {
+                RED4ext::CName name("RED4ext.SDK");
+                (void)name.hash;
+            }
+        ]]}, {configs = {languages = "cxx20"}, includes = "RED4ext/RED4ext.hpp"}))
+    end)

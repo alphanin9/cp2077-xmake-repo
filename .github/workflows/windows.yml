@@ -1,42 +1,38 @@
-name: Windows
+name: Packages
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
-      - dev
+      - main
 
 jobs:
-  build:
+  test:
     strategy:
       fail-fast: false
       matrix:
         os: [windows-2022, windows-2025]
-        kind: [static, shared]
-        arch: [x64, x86, arm64]
-        runtimes: [MT, MD]
 
     runs-on: ${{ matrix.os }}
 
     concurrency:
-        group: ${{ github.ref }}-${{ github.base_ref }}-${{ github.head_ref }}-Windows-${{ matrix.os }}-${{ matrix.kind }}-${{ matrix.arch }}-${{ matrix.runtimes }}
-        cancel-in-progress: true
+      group: ${{ github.ref }}-${{ github.base_ref }}-${{ github.head_ref }}-Packages-${{ matrix.os }}
+      cancel-in-progress: true
+
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
+
       - uses: xmake-io/github-action-setup-xmake@v1
         with:
           xmake-version: branch@master
           actions-cache-folder: '.xmake-cache'
-          actions-cache-key: 'windows'
+          actions-cache-key: 'packages-${{ matrix.os }}'
 
-      - name: Configure Pagefile
-        uses: al-cheb/configure-pagefile-action@v1.4
-        with:
-          minimum-size: 8GB
-          maximum-size: 32GB
-          disk-root: "D:"
-
-      - name: Tests
+      # Every package here is a Cyberpunk 2077 mod dependency: windows/x64 only, and MD
+      # only, because that is what the game and RED4ext plugins are built against.
+      - name: Test packages
         run: |
           xmake --version
-          xmake l ./scripts/test.lua -vD -a ${{ matrix.arch }} -k ${{ matrix.kind }} --runtimes=${{ matrix.runtimes }} --linkjobs=2
-
+          xmake l ./scripts/test.lua -vD -p windows -a x64 --runtimes=MD --linkjobs=2

@@ -28,3 +28,6 @@ gmon.out
 other
 tags
 doc
+# xmake / example build output
+build
+dist

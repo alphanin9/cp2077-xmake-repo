@@ -1,0 +1,40 @@
+package("sharedpunk")
+    set_homepage("https://github.com/alphanin9/sharedpunk")
+    set_description("Core utilities and reverse engineered game data for Cyberpunk 2077 mods built on RED4ext.SDK and RedLib.")
+    set_license("MIT")
+
+    -- submodules = false is load-bearing: xmake clones git urls recursively by default,
+    -- and a populated deps/ makes SharedPunk's xmake.lua build against the vendored
+    -- RED4ext.SDK / RedLib copies instead of the packages resolved below.
+    add_urls("https://github.com/alphanin9/sharedpunk.git", {submodules = false})
+
+    add_versions("2026.04.30", "226ab6267003e0aef58c2a9d1ac63e3e7b6cceff")
+
+    -- SharedPunk's own xmake.lua picks these up via add_requires when deps/ has no
+    -- submodules checked out, which is always the case for a plain git clone.
+    add_deps("red4ext-sdk", "red-lib", "safetyhook")
+
+    -- Mirrors the target's add_defines. WIN32_LEAN_AND_MEAN in particular has to match
+    -- across the boundary: it changes what <Windows.h> declares, and the public headers
+    -- are compiled again in the consumer.
+    add_defines("WINVER=0x0601", "WIN32_LEAN_AND_MEAN", "NOMINMAX")
+
+    add_syslinks("Version", "User32")
+
+    on_install("windows|x64", function (package)
+        import("package.tools.xmake").install(package)
+    end)
+
+    on_test("windows", function (package)
+        assert(package:check_cxxsnippets({test = [[
+            void test() {
+                auto system = shared::raw::Localization::LocalizationSystem::GetInstance();
+                (void)system;
+            }
+        ]]}, {configs = {languages = "cxxlatest"},
+              includes = {"RED4ext/RED4ext.hpp",
+                          "Shared/Raw/LocalizationSystem/LocalizationSystem.hpp",
+                          -- reaches safetyhook.hpp via Impl/Hooks/Driver/HookingDriver.hpp,
+                          -- so this also checks that safetyhook is exported to consumers
+                          "Shared/Hooks/HookManager.hpp"}}))
+    end)

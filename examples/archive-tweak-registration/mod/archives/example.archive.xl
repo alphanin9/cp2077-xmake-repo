@@ -1,0 +1,7 @@
+# ArchiveXL script. Sits next to example.archive and is picked up by
+# ArchiveXL::RegisterArchives, which registers every .archive and .xl in this directory.
+#
+# See https://github.com/psiberx/cp2077-archive-xl for the full syntax.
+resource:
+  scope:
+    - base\characters\garment

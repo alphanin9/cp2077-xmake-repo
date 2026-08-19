@@ -1,0 +1,7 @@
+# TweakXL record. Registered by TweakXL::RegisterTweaks, which picks up every .yaml /
+# .yml / .tweak in this directory.
+#
+# See https://github.com/psiberx/cp2077-tweak-xl for the full syntax.
+Items.MyExampleItem:
+  $base: Items.GenericInventoryItem
+  entityName: my_example_item
