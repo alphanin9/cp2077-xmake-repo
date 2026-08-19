@@ -32,7 +32,7 @@ to one built on SharedPunk's reversing infrastructure.
 | `red-lib` | [psiberx/cp2077-red-lib](https://github.com/psiberx/cp2077-red-lib) | Header-only. Pulls in `red4ext-sdk`. |
 | `archive-xl` | [psiberx/cp2077-archive-xl](https://github.com/psiberx/cp2077-archive-xl) | The `support/` registration header only, not the mod. |
 | `tweak-xl` | [psiberx/cp2077-tweak-xl](https://github.com/psiberx/cp2077-tweak-xl) | The `support/` registration header only, not the mod. |
-| `sharedpunk` | [alphanin9/sharedpunk](https://github.com/alphanin9/sharedpunk) | Static library. Pulls in `red4ext-sdk`, `red-lib` and `safetyhook`. |
+| `sharedpunk` | [alphanin9/sharedpunk](https://github.com/alphanin9/SharedPunk) | Static library. Pulls in `red4ext-sdk`, `red-lib` and `safetyhook`. |
 
 `archive-xl` and `tweak-xl` provide the client-side API a plugin uses to register its own
 archives and tweaks at runtime. ArchiveXL and TweakXL still have to be installed in the

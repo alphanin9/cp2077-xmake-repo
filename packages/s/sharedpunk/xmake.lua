@@ -1,12 +1,12 @@
 package("sharedpunk")
-    set_homepage("https://github.com/alphanin9/sharedpunk")
+    set_homepage("https://github.com/alphanin9/SharedPunk")
     set_description("Core utilities and reverse engineered game data for Cyberpunk 2077 mods built on RED4ext.SDK and RedLib.")
     set_license("MIT")
 
     -- submodules = false is load-bearing: xmake clones git urls recursively by default,
     -- and a populated deps/ makes SharedPunk's xmake.lua build against the vendored
     -- RED4ext.SDK / RedLib copies instead of the packages resolved below.
-    add_urls("https://github.com/alphanin9/sharedpunk.git", {submodules = false})
+    add_urls("https://github.com/alphanin9/SharedPunk.git", {submodules = false})
 
     add_versions("2026.04.30", "226ab6267003e0aef58c2a9d1ac63e3e7b6cceff")
 
