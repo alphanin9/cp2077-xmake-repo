@@ -1,0 +1,44 @@
+# Mirrors .github/workflows/{windows,examples}.yml.
+#
+# Runs on GitLab-hosted Windows runners (beta). They have no Docker executor, so
+# there is no `image:` and every script line is PowerShell. Windows runners bill at a
+# higher rate than Linux against the namespace's compute minutes.
+#
+# To use your own runner instead, swap the tag below for whatever you registered.
+
+.windows:
+  tags:
+    - saas-windows-medium-amd64
+  before_script:
+    # The install script appends its install dir to $env:Path for this session.
+    - irm https://xmake.io/psget.text | iex
+    - xmake --version
+
+stages:
+  - test
+
+# Every package here is a Cyberpunk 2077 mod dependency: windows/x64 only, and MD
+# only, because that is what the game and RED4ext plugins are built against.
+packages:
+  extends: .windows
+  stage: test
+  script:
+    - xmake l ./scripts/test.lua -vD -p windows -a x64 --runtimes=MD --linkjobs=2
+
+# The examples point add_repositories at the checkout, so this builds them against
+# the packages as they are in this commit rather than whatever is on main.
+examples:
+  extends: .windows
+  stage: test
+  parallel:
+    matrix:
+      - EXAMPLE:
+          - hello-world
+          - hello-world-redlib
+          - archive-tweak-registration
+          - sharedpunk-reversing
+        MODE: [debug, release]
+  script:
+    - Set-Location "examples/$env:EXAMPLE"
+    - xmake f -p windows -a x64 -m $env:MODE -y
+    - xmake -y
