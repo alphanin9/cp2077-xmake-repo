@@ -1,7 +1,7 @@
 -- RED4ext plugin using RedLib's declarative RTTI instead of hand-rolled registration.
 --
 -- Copying this out of the repo? Replace the add_repositories() line below with:
---   add_repositories("cp2077-repo https://github.com/alphanin9/cp2077-xmake-repo.git")
+--   add_repositories("cp2077-repo https://gitlab.com/alphanin9/cp2077-xmake-repo.git")
 add_repositories("cp2077-repo " .. path.absolute(path.join(os.scriptdir(), "..", "..")))
 
 set_project("HelloWorldRedLib")

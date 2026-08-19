@@ -3,9 +3,12 @@ package("sharedpunk")
     set_description("Core utilities and reverse engineered game data for Cyberpunk 2077 mods built on RED4ext.SDK and RedLib.")
     set_license("MIT")
 
-    add_urls("https://github.com/alphanin9/SharedPunk.git")
+    -- xmake walks these in order and only gives up after the last one, so the GitLab
+    -- mirror covers the GitHub repository being unreachable.
+    add_urls("https://gitlab.com/alphanin9/sharedpunk.git",
+             "https://github.com/alphanin9/SharedPunk.git")
 
-    add_versions("2026.08.19", "ff2ea82b9a940ddc3d609e3ced8330a4ed64861b")
+    add_versions("2026.08.19", "fe7eec9a28aa682a676fcb89cd15b3c4c74895f7")
 
     -- SharedPunk's own xmake.lua requires these three and adds this repository to find
     -- them, so they resolve to the same packages installed here.

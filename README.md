@@ -10,7 +10,7 @@ Follows the [xmake-repo](https://github.com/xmake-io/xmake-repo) layout.
 Add the repository and require what you need:
 
 ```lua
-add_repositories("cp2077-repo https://github.com/alphanin9/cp2077-xmake-repo.git")
+add_repositories("cp2077-repo https://gitlab.com/alphanin9/cp2077-xmake-repo.git")
 add_requires("red4ext-sdk", "red-lib")
 
 target("MyMod")
@@ -61,11 +61,18 @@ Add a package under `packages/<first-letter>/<name>/xmake.lua`, then test it:
 xmake l ./scripts/test.lua -p windows -a x64 <name>
 ```
 
-Omit the name to test every declared version of every package in the repository.
+Omit the name to test every declared version of every package in the repository,
+which is what the Packages workflow does. The Examples workflow builds each example
+against the checkout, so a package change is exercised end to end.
 
-There is no CI here yet. To check a change end to end, run the command above and
-then build the examples:
+To do the same locally:
 
 ```sh
 cd examples/hello-world && xmake f -p windows -a x64 -m release -y && xmake
 ```
+
+## Mirrors
+
+This repository lives on both [GitLab](https://gitlab.com/alphanin9/cp2077-xmake-repo)
+and [GitHub](https://github.com/alphanin9/cp2077-xmake-repo). `add_repositories` takes a
+single url with no fallback, so the snippets above name the GitLab one; either works.

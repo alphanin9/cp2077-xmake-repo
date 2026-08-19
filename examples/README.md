@@ -28,7 +28,7 @@ to a package is picked up on the next build. When you copy an example into your 
 swap that line for the remote:
 
 ```lua
-add_repositories("cp2077-repo https://github.com/alphanin9/cp2077-xmake-repo.git")
+add_repositories("cp2077-repo https://gitlab.com/alphanin9/cp2077-xmake-repo.git")
 ```
 
 ## Notes
