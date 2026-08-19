@@ -8,7 +8,7 @@ package("sharedpunk")
     add_urls("https://gitlab.com/alphanin9/sharedpunk.git",
              "https://github.com/alphanin9/SharedPunk.git")
 
-    add_versions("2026.08.19", "fe7eec9a28aa682a676fcb89cd15b3c4c74895f7")
+    add_versions("2026.08.19", "3d739ea6bf2babe8bba085c2142f62c432593ad0")
 
     -- SharedPunk's own xmake.lua requires these three and adds this repository to find
     -- them, so they resolve to the same packages installed here.
