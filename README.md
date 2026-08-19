@@ -61,4 +61,11 @@ Add a package under `packages/<first-letter>/<name>/xmake.lua`, then test it:
 xmake l ./scripts/test.lua -p windows -a x64 <name>
 ```
 
-Omit the name to test every package in the repository, which is what CI does.
+Omit the name to test every declared version of every package in the repository.
+
+There is no CI here yet. To check a change end to end, run the command above and
+then build the examples:
+
+```sh
+cd examples/hello-world && xmake f -p windows -a x64 -m release -y && xmake
+```
