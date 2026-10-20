@@ -47,5 +47,6 @@ jobs:
           PACKAGES: ${{ inputs.packages }}
         run: |
           xmake --version
-          $packages = -split "$env:PACKAGES"
+          # -split on an empty string gives one empty string, so drop the empties.
+          $packages = @(-split "$env:PACKAGES" | Where-Object { $_ })
           xmake l ./scripts/test.lua -vD -p windows -a x64 --runtimes=MD --linkjobs=2 @packages
