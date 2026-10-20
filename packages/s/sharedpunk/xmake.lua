@@ -8,21 +8,29 @@ package("sharedpunk")
     add_urls("https://github.com/alphanin9/SharedPunk.git",
              "https://gitlab.com/alphanin9/sharedpunk.git")
 
-    add_versions("2026.08.19", "3d739ea6bf2babe8bba085c2142f62c432593ad0")
+    if not is_plat("macosx") then
+        -- Predates the macOS support, so it is not offered there.
+        add_versions("2026.08.19", "3d739ea6bf2babe8bba085c2142f62c432593ad0")
+    end
     add_versions("2026.10.20", "3a6909cf5e766eee16fe664ef70c6a7884971e2d")
 
     -- SharedPunk's own xmake.lua requires these three and adds this repository to find
-    -- them, so they resolve to the same packages installed here.
-    add_deps("red4ext-sdk", "red-lib", "safetyhook")
+    -- them, so they resolve to the same packages installed here. safetyhook is x86 only: the
+    -- macOS hook driver goes through the RED4ext loader API instead.
+    add_deps("red4ext-sdk", "red-lib")
+    if is_plat("windows") then
+        add_deps("safetyhook")
+    end
 
     -- Mirrors the target's add_defines. WIN32_LEAN_AND_MEAN in particular has to match
     -- across the boundary: it changes what <Windows.h> declares, and the public headers
     -- are compiled again in the consumer.
-    add_defines("WINVER=0x0601", "WIN32_LEAN_AND_MEAN", "NOMINMAX")
+    if is_plat("windows") then
+        add_defines("WINVER=0x0601", "WIN32_LEAN_AND_MEAN", "NOMINMAX")
+        add_syslinks("Version", "User32")
+    end
 
-    add_syslinks("Version", "User32")
-
-    on_install("windows|x64", function (package)
+    on_install("windows|x64", "macosx|arm64", function (package)
         import("package.tools.xmake").install(package)
     end)
 
