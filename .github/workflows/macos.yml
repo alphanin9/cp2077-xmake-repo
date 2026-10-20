@@ -1,0 +1,51 @@
+name: Packages (macOS)
+
+on:
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: 'Package names to test, separated by spaces (blank: the ones the last commit changed)'
+        required: false
+        default: ''
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    # arm64 runner: the macOS build of the game is Apple Silicon only.
+    runs-on: macos-15
+
+    concurrency:
+      group: ${{ github.ref }}-${{ github.base_ref }}-${{ github.head_ref }}-Packages-macos-15
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # scripts/test.lua diffs against HEAD^ to find the packages to test.
+          fetch-depth: 2
+
+      # The default Xcode's libc++ is too old for SharedPunk's <format> use.
+      - name: Select Xcode 16
+        run: |
+          sudo xcode-select -s /Applications/Xcode_16.4.app || sudo xcode-select -s /Applications/Xcode_16.2.app
+          clang++ --version
+
+      - uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: branch@master
+          actions-cache-folder: '.xmake-cache'
+          actions-cache-key: 'packages-macos-15'
+
+      # Only the versions a recipe offers on macosx are tested here; the Windows-only ones
+      # are skipped by scripts/test.lua, and the reverse happens in windows.yml.
+      - name: Test packages
+        env:
+          PACKAGES: ${{ inputs.packages }}
+        run: |
+          xmake --version
+          xmake l ./scripts/test.lua -vD -p macosx -a arm64 --linkjobs=2 $PACKAGES

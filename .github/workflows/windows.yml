@@ -2,6 +2,11 @@ name: Packages
 
 on:
   workflow_dispatch:
+    inputs:
+      packages:
+        description: 'Package names to test, separated by spaces (blank: the ones the last commit changed)'
+        required: false
+        default: ''
   push:
     branches:
       - main
@@ -34,9 +39,13 @@ jobs:
           actions-cache-folder: '.xmake-cache'
           actions-cache-key: 'packages-${{ matrix.os }}'
 
-      # Every package here is a Cyberpunk 2077 mod dependency: windows/x64 only, and MD
-      # only, because that is what the game and RED4ext plugins are built against.
+      # Every package here is a Cyberpunk 2077 mod dependency: windows/x64, and MD only,
+      # because that is what the game and RED4ext plugins are built against. The macOS
+      # build of the game is tested in macos.yml.
       - name: Test packages
+        env:
+          PACKAGES: ${{ inputs.packages }}
         run: |
           xmake --version
-          xmake l ./scripts/test.lua -vD -p windows -a x64 --runtimes=MD --linkjobs=2
+          $packages = -split "$env:PACKAGES"
+          xmake l ./scripts/test.lua -vD -p windows -a x64 --runtimes=MD --linkjobs=2 @packages

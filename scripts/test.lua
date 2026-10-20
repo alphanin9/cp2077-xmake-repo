@@ -261,6 +261,25 @@ function _package_is_supported(argv, packagename)
     end
 end
 
+-- the given package version is offered on this platform?
+--
+-- Recipes pick their version lists with is_plat(), which is evaluated for the host when
+-- they are loaded, so this can only tell when the host is the platform under test. The
+-- Windows and macOS jobs each run on their own platform, so there it always can.
+function _package_version_is_offered(argv, packagename)
+    local name, version = table.unpack(packagename:split("%s+"))
+    local plat = argv.plat or os.subhost()
+    if not version or plat ~= os.subhost() then
+        return true
+    end
+    for _, package in ipairs(get_packages()[plat] or {}) do
+        if package.name == name then
+            return table.contains(table.wrap(package.instance:versions()), version)
+        end
+    end
+    return true
+end
+
 function get_modified_packages()
     local packages = {}
     local diff = os.iorun("git --no-pager diff HEAD^")
@@ -363,6 +382,9 @@ function main(...)
     for idx, package in irpairs(packages) do
         assert(package == package:lower(), "package(%s) must be lower case!", package)
         if not _package_is_supported(argv, package) then
+            table.remove(packages, idx)
+        elseif not _package_version_is_offered(argv, package) then
+            print("skipping %s, not offered on %s", package, argv.plat or os.subhost())
             table.remove(packages, idx)
         end
     end
