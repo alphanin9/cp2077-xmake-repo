@@ -24,6 +24,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # scripts/test.lua diffs against HEAD^ to find the packages to test.
+          fetch-depth: 2
 
       - uses: xmake-io/github-action-setup-xmake@v1
         with:
