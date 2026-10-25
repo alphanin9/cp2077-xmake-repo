@@ -17,6 +17,7 @@ package("red4ext-sdk")
         -- Set this to your own repo when making some PR.
         add_urls("https://github.com/WopsS/RED4ext.SDK.git")
 
+        add_versions("2026.10.24", "5246e659d783e5834cc08a90e56c8932c9ed3449")
         add_versions("2026.07.30", "ad7277714ad30d6885d7050c5ba24fa0102f6920")
         add_versions("2026.07.06", "cce6e255f5e61056e634f324a3dbdfa6da523af9")
         add_versions("2026.06.07", "109b585a956b694b859ca9e75766543be60d2051")
