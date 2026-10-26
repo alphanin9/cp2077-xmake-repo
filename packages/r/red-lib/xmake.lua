@@ -9,7 +9,7 @@ package("red-lib")
     if is_plat("macosx") then
         -- Same source as 2026.08.09 with the macosx patch. The suffix keeps the patched package apart from cached
         -- unpatched ones, and it is the only version offered here so dependents resolve to it.
-        add_versions("2026.08.09-macos.2", "6822105d15d1b8bd1e6aae5e57827835e585cfe8")
+        add_versions("2026.08.09-macos.3", "6822105d15d1b8bd1e6aae5e57827835e585cfe8")
     else
         add_versions("2026.08.09", "6822105d15d1b8bd1e6aae5e57827835e585cfe8")
         add_versions("2026.06.10", "009d404d0ed96c7bfce8e937cc1cc97cc13b1c5f")
@@ -24,11 +24,11 @@ package("red-lib")
     end
 
     -- Clang fixes for the macosx build (pending in psiberx/cp2077-red-lib): registrars are only instantiated
-    -- when something uses them, the scoped-enum type names, one `auto` pair, `const bool` on an override,
+    -- when something uses them, the scoped-enum type names, one `auto` pair,
     -- and one Handle conversion. Drop this line once the pinned commit contains them.
     if is_plat("macosx") then
-        add_patches("2026.08.09-macos.2", path.join(os.scriptdir(), "patches", "macos-clang.patch"),
-                    "982cda66338b3d8bc4c006438124f0b8cb0af2a8ffe3fb7fec8304fe6b360052")
+        add_patches("2026.08.09-macos.3", path.join(os.scriptdir(), "patches", "macos-clang.patch"),
+                    "b2c72fb19ab21742c173eb917f4bc70d20de557f47ab72815a85356cb03a79b0")
     end
 
     on_install("windows|x64", "macosx|arm64", function (package)
