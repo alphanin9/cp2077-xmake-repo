@@ -2,20 +2,7 @@ diff --git a/include/Red/TypeInfo/Definition.hpp b/include/Red/TypeInfo/Definiti
 index 50dbb39..4c3f301 100644
 --- a/include/Red/TypeInfo/Definition.hpp
 +++ b/include/Red/TypeInfo/Definition.hpp
-@@ -667,7 +667,12 @@ public:
- template<typename TClass>
- class ClassDescriptorDefaultImpl : public ClassDescriptor<TClass>
- {
-+#if defined(__APPLE__)
-+    // The macOS SDK declares the base as returning bool; clang rejects a const-qualified override of it.
-+    bool IsEqual(const void* aLhs, const void* aRhs, uint32_t a3) final // 48
-+#else
-     const bool IsEqual(const void* aLhs, const void* aRhs, uint32_t a3) final // 48
-+#endif
-     {
-         if constexpr (Detail::IsConstructionForwarded<TClass>)
-         {
-@@ -1000,7 +1005,8 @@ struct SystemBuilder
+@@ -1000,7 +1000,8 @@ struct SystemBuilder
  
          gameInstance->systemMap.Insert(systemType, systemInstance);
          gameInstance->systemImplementations.Insert(systemType, systemType);

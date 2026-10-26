@@ -8,11 +8,14 @@ package("red4ext-sdk")
     set_policy("platform.longpaths", true)
 
     if is_plat("macosx") then
-        -- macOS (Apple Silicon): jackmaxwil's port of the SDK, based on RED4ext.SDK 1.0. Same include/ layout.
-        -- Game addresses resolve through its cyberpunk2077_addresses.json at run time, not through this package.
-        add_urls("https://github.com/jackmaxwil/RED4ext.SDK-macos.git")
+        -- macOS (Apple Silicon): codeman101's port of the SDK. It is upstream WopsS/RED4ext.SDK master (the patch 2.5
+        -- types, the same state as the 2026.10.24 version below) merged with the macOS layouts and Mach-O handling.
+        -- Same include/ layout. Game addresses resolve through a Mac table built into the headers. The few symbols that
+        -- table expects from the plugin (memory vault, id counters) and the plugin's own address rows come from one file
+        -- the plugin adds, see include/RED4ext/Mac/PluginSupport.hpp; nothing to configure here.
+        add_urls("https://github.com/codeman101/RED4ext.SDK-macos.git")
 
-        add_versions("2026.10.11", "f657158c0c11248932c4a8567d800286d5e29e62")
+        add_versions("2026.10.26", "105a4f4a7d8ef60bad36b8a9f3dbe98ad81a3366")
     else
         -- Set this to your own repo when making some PR.
         add_urls("https://github.com/WopsS/RED4ext.SDK.git")
