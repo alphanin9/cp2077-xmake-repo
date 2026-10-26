@@ -186,3 +186,33 @@ index 1e838a9..c45e97b 100644
  
          if constexpr (isScopedEnum)
          {
+diff --git a/include/Red/TypeInfo/Registrar.hpp b/include/Red/TypeInfo/Registrar.hpp
+--- a/include/Red/TypeInfo/Registrar.hpp
++++ b/include/Red/TypeInfo/Registrar.hpp
+@@ -19,6 +19,26 @@
+         QueuePendingDescribeCallbacks();
+     }
+ 
++#ifdef __APPLE__
++    // macOS loader: it calls a plugin's registration function after the game's RTTI registration phase, so callbacks
++    // queued with the RTTI system would not run any more. Runs the pending ones now instead.
++    static inline void RunPending()
++    {
++        ProcessPendingRegisterCallbacks();
++        ProcessPendingDescriberCallbacks();
++    }
++
++    static inline std::size_t PendingRegisterCount()
++    {
++        return s_registerCallbacks.size();
++    }
++
++    static inline std::size_t PendingDescribeCount()
++    {
++        return s_describeCallbacks.size();
++    }
++#endif
++
+     static inline void AddRegisterCallback(Callback aRegister)
+     {
+         if (aRegister)
