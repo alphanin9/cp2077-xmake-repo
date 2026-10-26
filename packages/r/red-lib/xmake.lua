@@ -9,7 +9,7 @@ package("red-lib")
     if is_plat("macosx") then
         -- Same source as 2026.08.09 with the macosx patch. The suffix keeps the patched package apart from cached
         -- unpatched ones, and it is the only version offered here so dependents resolve to it.
-        add_versions("2026.08.09-macos.4", "6822105d15d1b8bd1e6aae5e57827835e585cfe8")
+        add_versions("2026.08.09-macos.3", "6822105d15d1b8bd1e6aae5e57827835e585cfe8")
     else
         add_versions("2026.08.09", "6822105d15d1b8bd1e6aae5e57827835e585cfe8")
         add_versions("2026.06.10", "009d404d0ed96c7bfce8e937cc1cc97cc13b1c5f")
@@ -25,11 +25,10 @@ package("red-lib")
 
     -- Clang fixes for the macosx build (pending in psiberx/cp2077-red-lib): registrars are only instantiated
     -- when something uses them, the scoped-enum type names, one `auto` pair,
-    -- and one Handle conversion; plus TypeInfoRegistrar::RunPending for the macOS loader, which calls a plugin's
-    -- registration after the game's RTTI registration phase. Drop this line once the pinned commit contains them.
+    -- and one Handle conversion. Drop this line once the pinned commit contains them.
     if is_plat("macosx") then
-        add_patches("2026.08.09-macos.4", path.join(os.scriptdir(), "patches", "macos-clang.patch"),
-                    "7ff62bb93ea52e5da2ebf92b1b4f9eda44d358f53a2d8a3312cd13b4859559d7")
+        add_patches("2026.08.09-macos.3", path.join(os.scriptdir(), "patches", "macos-clang.patch"),
+                    "b2c72fb19ab21742c173eb917f4bc70d20de557f47ab72815a85356cb03a79b0")
     end
 
     on_install("windows|x64", "macosx|arm64", function (package)
