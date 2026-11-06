@@ -14,6 +14,7 @@ package("sharedpunk")
     end
     add_versions("2026.10.20", "3a6909cf5e766eee16fe664ef70c6a7884971e2d")
     add_versions("2026.10.25", "19267b42b733d44dd78d1bc7e34f8c7a54f61e9b")
+    add_versions("2026.11.06", "6878a46d7f0ca4128da0231c20a1a0f9c01d6282")
 
     -- SharedPunk's own xmake.lua requires these three and adds this repository to find
     -- them, so they resolve to the same packages installed here. safetyhook is x86 only: the
